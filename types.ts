@@ -13,6 +13,13 @@ export interface User {
   posts?: number;
 }
 
+export interface PostComment {
+  id: string;
+  user: User;
+  text: string;
+  timeAgo: string;
+}
+
 export interface Post {
   id: string;
   author: User;
@@ -21,6 +28,7 @@ export interface Post {
   tags: string[];
   likes: string;
   comments: number;
+  commentsList?: PostComment[];
   shares: number;
   timeAgo: string;
 }

@@ -1,6 +1,6 @@
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { User, Post, Match, Notification } from './types';
+import { User, Post, Match, Notification, PostComment } from './types';
 import { MOCK_POSTS, MOCK_MATCHES, MOCK_USER, MOCK_USERS } from './constants';
 
 interface AppContextType {
@@ -15,6 +15,7 @@ interface AppContextType {
   likePost: (postId: string) => void;
   followUser: (userId: string) => void;
   addPost: (content: string, image: string, tags: string[]) => void;
+  addComment: (postId: string, text: string) => void;
   markAllNotificationsRead: () => void;
   updateCurrentUser: (updates: Partial<User>) => void;
 }
@@ -74,7 +75,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const updateCurrentUser = (updates: Partial<User>) => {
     setCurrentUser(prev => ({ ...prev, ...updates }));
-    // Also update current user details in existing posts if the author is 'me'
     setPosts(prev => prev.map(post => {
       if (post.author.id === 'me') {
         return { ...post, author: { ...post.author, ...updates } };
@@ -126,6 +126,26 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }));
   };
 
+  const addComment = (postId: string, text: string) => {
+    const newComment: PostComment = {
+      id: Date.now().toString(),
+      user: currentUser,
+      text,
+      timeAgo: 'Just now'
+    };
+
+    setPosts(prev => prev.map(post => {
+      if (post.id === postId) {
+        return {
+          ...post,
+          comments: post.comments + 1,
+          commentsList: [newComment, ...(post.commentsList || [])]
+        };
+      }
+      return post;
+    }));
+  };
+
   const addPost = (content: string, image: string, tags: string[]) => {
     const newPost: Post = {
       id: Date.now().toString(),
@@ -136,7 +156,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       likes: '0',
       comments: 0,
       shares: 0,
-      timeAgo: 'Just now'
+      timeAgo: 'Just now',
+      commentsList: []
     };
     setPosts(prev => [newPost, ...prev]);
   };
@@ -144,7 +165,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   return (
     <AppContext.Provider value={{ 
       posts, setPosts, matches, setMatches, currentUser, 
-      notifications, followedUsers, addNotification, likePost, followUser, addPost,
+      notifications, followedUsers, addNotification, likePost, followUser, addPost, addComment,
       markAllNotificationsRead, updateCurrentUser
     }}>
       {children}

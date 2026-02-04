@@ -77,6 +77,7 @@ const Chat: React.FC = () => {
   const [isGeneratingIcebreaker, setIsGeneratingIcebreaker] = useState(false);
   const [icebreakerSuggestions, setIcebreakerSuggestions] = useState<IcebreakerSuggestion[]>([]);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const [isLinkCopied, setIsLinkCopied] = useState(false);
   
   // Call States
   const [isCallActive, setIsCallActive] = useState(false);
@@ -407,6 +408,14 @@ const Chat: React.FC = () => {
     });
   };
 
+  const handleShareProfileLink = () => {
+    const url = `${window.location.origin}/#/profile/${targetUser.id}`;
+    navigator.clipboard.writeText(url).then(() => {
+      setIsLinkCopied(true);
+      setTimeout(() => setIsLinkCopied(false), 2000);
+    });
+  };
+
   return (
     <div className="flex-1 flex flex-col h-full bg-background-light dark:bg-background-dark overflow-hidden font-display relative">
       {/* Immersive Video Call Overlay */}
@@ -513,6 +522,13 @@ const Chat: React.FC = () => {
           >
             <span className={`material-symbols-outlined text-2xl fill-1 ${isGeneratingIcebreaker ? 'animate-pulse' : ''}`}>auto_awesome</span>
             {isGeneratingIcebreaker && <div className="absolute inset-0 rounded-full border-2 border-primary border-t-transparent animate-spin"></div>}
+          </button>
+          <button 
+            onClick={handleShareProfileLink} 
+            className={`p-2 transition-all active:scale-90 ${isLinkCopied ? 'text-primary' : 'text-slate-400 hover:text-primary'}`}
+            title="Share Profile Link"
+          >
+            <span className="material-symbols-outlined text-2xl">{isLinkCopied ? 'check' : 'share'}</span>
           </button>
           <button onClick={startCall} className="p-2 text-slate-400 hover:text-primary active:scale-90">
             <span className="material-symbols-outlined text-2xl">videocam</span>
