@@ -1,8 +1,8 @@
 {
-  "name": "NexLink Professional Discovery",
-  "description": "A high-end professional social network focused on discovery, high-impact networking, and AI-driven matching. Built for the modern creative and tech professional.",
   "requestFramePermissions": [
     "camera",
     "microphone"
-  ]
+  ],
+  "name": "",
+  "description": ""
 }
